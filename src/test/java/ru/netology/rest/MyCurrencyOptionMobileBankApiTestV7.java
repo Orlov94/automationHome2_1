@@ -7,28 +7,28 @@ import io.restassured.specification.RequestSpecification;
 import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.*;
 
-class MobileBankApiTestV6 {
-    private RequestSpecification requestSpec = new RequestSpecBuilder()
-        .setBaseUri("http://localhost")
-        .setBasePath("/api/v1")
-        .setPort(9999)
-        .setAccept(ContentType.JSON)
-        .setContentType(ContentType.JSON)
-        .log(LogDetail.ALL)
-        .build();
+class MyCurrencyOptionMobileBankApiTestV7 {
 
     @Test
-    void shouldReturnDemoAccounts() {
-      // Given - When - Then
-      // Предусловия
-      given()
-          .spec(requestSpec) // со спецификацией проще (особенно когда много тестов)
-      // Выполняемые действия
-      .when()
-          .get("/demo/accounts")
-      // Проверки
-      .then()
-          .statusCode(200);
+    void shouldReturnCurrencyRubOrUsd() {
+        // Given - When - Then
+        // Предусловия
+        given()
+                .baseUri("http://localhost:9999/api/v1")
+                // Выполняемые действия
+                .when()
+                .get("/demo/accounts")
+                // Проверки
+                .then()
+                .statusCode(200)
+                // специализированные проверки - лучше
+                .contentType(ContentType.JSON)
+                .body("", hasSize(3))
+                .body("[1].currency", equalTo("RUB"))
+                .body("[0].balance", greaterThanOrEqualTo(0))
+
+        ;
     }
 }
